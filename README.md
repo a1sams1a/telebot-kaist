@@ -1,1 +1,1 @@
-# KAIST Telegram Bot
+# SPARCS SSO Server Monitoring Telegram Bot
