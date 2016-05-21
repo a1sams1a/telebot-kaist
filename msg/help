@@ -1,0 +1,11 @@
+HELP! HELP! HELP!
+- /sysstat (P): return boot time / user
+- /cpustat (P): return cpu usages
+- /memstat (P): return memory usages
+- /webstat (P): return apache process stat
+- /diskstat (P): return disk usages
+- /procstat (P): return process name list
+- /bakstat (P): return backup stat (TBI)
+- /ping: return 'pong'
+- /nyang: return 'nyang'
+- /rand <int>: return random integer in [0, <int>]
