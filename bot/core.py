@@ -129,7 +129,7 @@ def init():
         ADMIN_ID = map(lambda x: int(x), f.read().strip().split(','))
 
     msg_list = ['start', 'help', 'unknown', 'forbid']
-    msg_list = map(lambda x: [path.join(ROOT_PATH, x), x], msg_list)
+    msg_list = map(lambda x: [path.join(ROOT_PATH, path.join('msg', x)), x], msg_list)
 
     for absp, abbr in msg_list:
         if not path.isfile(absp):
