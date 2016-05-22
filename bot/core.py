@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from os import path
 import psutil
 import logging
 import os
@@ -7,6 +8,8 @@ import random
 import telegram
 import datetime
 
+
+ROOT_PATH = path.dirname(path.abspath(__file__))
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -115,22 +118,24 @@ def init():
     random.seed(os.urandom(128))
 
     file_list = ['bot.key', 'me.id']
-    if any(not os.path.isfile(n) for n in file_list):
+    file_list = map(lambda x: path.join(ROOT_PATH, x), file_list)
+    if any(not path.isfile(n) for n in file_list):
         raise Error
 
-    with open('bot.key', 'r') as f:
+    with open(file_list[0], 'r') as f:
         TOKEN = f.read().strip()
 
-    with open('me.id', 'r') as f:
+    with open(file_list[1], 'r') as f:
         ADMIN_ID = map(lambda x: int(x), f.read().strip().split(','))
 
     msg_list = ['start', 'help', 'unknown', 'forbid']
+    msg_list = map(lambda x: [path.join(ROOT_PATH, x), x], msg_list)
 
-    for fn in msg_list:
-        if not os.path.isfile('msg/'+fn):
+    for absp, abbr in msg_list:
+        if not path.isfile(absp):
             continue
-        with open('msg/'+fn, 'r') as f:
-            MESSAGE[fn] = f.read().strip()
+        with open(absp, 'r') as f:
+            MESSAGE[abbr] = f.read().strip()
 
 def main():
     try:
@@ -138,7 +143,6 @@ def main():
     except:
         logger.error('INIT FAIL')
         return
-
 
     updater = Updater(TOKEN)
 
@@ -160,7 +164,6 @@ def main():
     dp.add_handler(MessageHandler([Filters.text], echo))
 
     dp.add_error_handler(error)
-
 
     updater.start_polling()
     updater.idle()
