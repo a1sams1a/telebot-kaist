@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from os import path
+from .settings import ROOT_PATH, TOKEN, ADMIN_ID, BACKUP_DIR
 import psutil
 import logging
 import os
@@ -9,13 +10,9 @@ import telegram
 import datetime
 
 
-ROOT_PATH = path.dirname(path.abspath(__file__))
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-TOKEN = ''
-ADMIN_ID = []
 MESSAGE = {}
 
 
@@ -99,7 +96,9 @@ def stat(bot, update, mode):
                 pass
         resp = 'PROC: %s' % ','.join(pinfo)
     elif mode == 'bak':
-        resp = 'BACKUP: TBI'
+        flist = [f for f in os.listdir(BACKUP_DIR) if path.isfile(path.join(BACKUP_DIR, f))]
+        m = reduce(lambda x, y: max(x, y), flist).strip().split('.')[0]
+        resp = 'LAST BACKUP: %s' % m
 
     bot.sendMessage(chat_id, text=resp)
 
@@ -114,19 +113,8 @@ def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
 def init():
-    global TOKEN, ADMIN_ID, MESSAGE
+    global MESSAGE
     random.seed(os.urandom(128))
-
-    file_list = ['bot.key', 'me.id']
-    file_list = map(lambda x: path.join(ROOT_PATH, x), file_list)
-    if any(not path.isfile(n) for n in file_list):
-        raise Error
-
-    with open(file_list[0], 'r') as f:
-        TOKEN = f.read().strip()
-
-    with open(file_list[1], 'r') as f:
-        ADMIN_ID = map(lambda x: int(x), f.read().strip().split(','))
 
     msg_list = ['start', 'help', 'unknown', 'forbid']
     msg_list = map(lambda x: [path.join(ROOT_PATH, path.join('msg', x)), x], msg_list)
@@ -138,11 +126,7 @@ def init():
             MESSAGE[abbr] = f.read().strip()
 
 def main():
-    try:
-        init()
-    except:
-        logger.error('INIT FAIL')
-        return
+    init()
 
     updater = Updater(TOKEN)
 

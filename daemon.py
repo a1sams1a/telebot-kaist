@@ -1,6 +1,7 @@
 import sys, os, time, atexit
 from signal import SIGTERM
 from bot.core import main
+from bot.settings import PID_FILE, STDERR_FILE
 
 
 class Daemon:
@@ -98,8 +99,7 @@ class Daemon:
 
 
 if __name__ == '__main__':
-    daemon = Daemon('/tmp/tel-sso-bot.pid',
-             stderr='/tmp/tel-sso-bot.log')
+    daemon = Daemon(PID_FILE, stderr=STDERR_FILE)
 
     if len(sys.argv) == 2:
         if sys.argv[1] == 'start':
